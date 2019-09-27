@@ -1,0 +1,107 @@
+<!-- Akila Ganlath 
+     Toyota InfoTech Center
+     Intelligent Connected Systems
+    
+     Launch file to be used on the testbed vehicle for initiliazation of sensors, 
+     actuators, and controllers -->
+
+<launch>
+        <!-- low-level drive interface node  -->
+        <param name="pca9685/freq" value="62.47" />
+        <param name="pca9685/resolution" value="4096" />
+        <param name="pca9685/i2cbus" value="0" />
+        <param name="pca9685/speed_channel" value="4" />
+        <param name="pca9685/steering_channel" value="0" />
+        <param name="servo/servo_min" value="290" />
+        <param name="servo/servo_center" value="352" />
+        <param name="servo/servo_max" value="415" />    
+        <param name="esc/esc_min" value="364" />
+        <param name="esc/esc_neutral" value="383" />
+        <param name="esc/esc_max" value="410" />
+        <param name="esc/pwm_offset" value="8" />
+        <node name ="actuator_interface" pkg="testbed_temp" type="actuator-interface_old.py" output="screen" >
+        </node>
+
+        <!-- LOW-LEVEL SENSING NODES ####################################################### -->
+
+        <!-- encoder -->
+        <node name ="encoder" pkg="rosserial_python" type="serial_node.py" output="screen" >
+            <param name="port" value="/dev/ttyACM0" />
+            <param name="baud" value= "345600" /> 
+        </node>
+
+        <!-- lidar 
+        <node name ="lidar" pkg="urg_node" type="urg_node" output="screen" >
+            <param name="ip_address" value="192.168.0.10" />
+            <param name="ip_port" value="10940" />
+        </node> -->
+
+        <!-- imu 
+        <param name="imu/freq" value="20" />
+        <param name="imu/i2cbus" value="1" />
+        <node name ="imu" pkg="testbed_temp" type="imu.py" output="screen" >   
+        </node> -->
+
+        <!-- gps 
+        <node name ="gps" pkg="nmea_navsat_driver" type="nmea_serial_driver" output="screen" >
+            <param name="port" value="/dev/ttyTHS2" />
+            <param name="baud" value="9600" /> 
+            <param name="useRMC" value="True" />  
+            <remap from="fix" to="state/gps"/>
+        </node> -->
+
+        <!-- camera perception nodes 
+        <include file="$(find zed_wrapper)/launch/zed.launch" />-->
+
+        <!-- MID-LEVEL ESTIMATION NODES ####################################################### -->
+        
+        <!-- odometery  -->
+        <param name="odometry/freq" value="20.0" />
+        <param name="odometry/buffer_freq" value="50.0" />
+        <node name ="odometry" pkg="testbed_temp" type="odometry.py" output="screen" />
+
+        <!-- MID-LEVEL CONTROL NODES ####################################################### -->
+
+        <!-- speed control node -->
+        <param name="speed_controller/freq" value="20.0" />
+        <param name="speed_controller/Kp" value="0.18848" />
+        <param name="speed_controller/Ki" value="0.65172" />
+        <param name="speed_controller/Kd" value="0" />
+        <param name="speed_controller/speed_min" value="0.0" />
+        <param name="speed_controller/speed_max" value="4.0" />
+        <param name="speed_controller/tuning" type="bool" value="False" />
+        <param name="speed_controller/test_time" value="40.0" />
+        <node name ="speed_controller" pkg="testbed_temp" type="speed-control.py" output="screen" /> 
+
+        <!-- steering control node -->
+
+
+
+        <!-- high-level ACC controller node-->
+        
+
+        <!-- INTERFACE NODES ####################################################### -->
+
+        <!-- joy node -->
+        <node pkg="joy" type="joy_node" name="joy" output="screen">
+            <param name="dev" value="/dev/input/js0" />
+            <param name="coalesce_interval" value= "0.25" />
+        </node>
+        
+        <!-- teleop-joy node -->
+        <param name="teleop/steer_axis" value="0" />
+        <param name="teleop/throttle_axis" value= "3" />
+        <param name="teleop/steer_scale" value= "1000" />
+        <param name="teleop/throttle_scale" value= "1000" />
+        <param name="teleop/safety_button" value="4" /> 
+        <param name="teleop/arming_button" value="5" />
+        <param name="teleop/emergency_brake_button" value="1" />
+        <node pkg="testbed_temp" type="teleop-joy.py" name="teleop_joy" output="screen"/>
+
+
+        <!-- logging 
+        <node name="vehicle_bagger" pkg="rosbag" 
+            type="record"  output="screen" 
+            args="record -o /home/nvidia/bags/tests /vehicle_speed" 
+        />-->
+</launch>
