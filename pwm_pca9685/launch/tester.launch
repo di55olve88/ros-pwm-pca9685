@@ -6,7 +6,7 @@
 
 <launch>
         <!-- low-level drive interface node  -->
-        <param name="frequency" value="62.47" />
+        <param name="frequency" value="50" />
         <param name="address" value="0x40" />
         <param name="device" value="/dev/i2c-1" />
         <param name="timeout_value " value="[0,0,0,383,0,0,0,0,0,0,0,0,0,0,0,0]" />
